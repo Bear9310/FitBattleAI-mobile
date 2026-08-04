@@ -22,12 +22,16 @@ export default function HomeScreen() {
     socket.on("matchFound", (data) => {
 
   const opponent = data.players.find(
-    (p: any) => p.id !== socket.id
+    (p:any)=>p.id!==socket.id
   );
 
   setStatus(
     "Matched with " + (opponent?.username || "Opponent")
   );
+
+
+  global.roomId = data.roomId;
+
 
   router.push("/battle");
 
