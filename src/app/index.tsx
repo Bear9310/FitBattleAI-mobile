@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { router } from "expo-router";
 import {
   View,
   Text,
@@ -19,13 +20,18 @@ export default function HomeScreen() {
     });
 
     socket.on("matchFound", (data) => {
-      setStatus(
-        "Matched with " +
-          data.players.find((p: any) => p.id !== socket.id)?.username
-      );
 
-      console.log(data);
-    });
+  const opponent = data.players.find(
+    (p: any) => p.id !== socket.id
+  );
+
+  setStatus(
+    "Matched with " + (opponent?.username || "Opponent")
+  );
+
+  router.push("/battle");
+
+});
 
     return () => {
       socket.off("waiting");
