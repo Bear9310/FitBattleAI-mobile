@@ -12,7 +12,7 @@ import {
   useCameraPermissions
 } from "expo-camera";
 
-import { detectPose } from "@/services/pose/poseDetector";
+import { processPoseFrame } from "@/services/pose/poseBattleBridge";
 
 
 
@@ -32,7 +32,7 @@ export default function CameraScreen(){
 
 
     const result =
-      detectPose(null);
+  processPoseFrame();
 
 
 
