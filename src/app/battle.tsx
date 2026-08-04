@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-
+import { router } from "expo-router";
 import socket from "../services/socket";
 
 import {
@@ -211,7 +211,14 @@ export default function BattleScreen() {
         Battle in Progress
       </Text>
 
-
+	<TouchableOpacity
+	  onPress={() => router.push("/camera")}
+	  style={styles.button}
+	>
+	  <Text style={styles.buttonText}>
+	    Open Camera
+	  </Text>
+	</TouchableOpacity>
 
 
       <TouchableOpacity
