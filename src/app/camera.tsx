@@ -12,6 +12,8 @@ import {
   useCameraPermissions
 } from "expo-camera";
 
+import { detectPose } from "@/services/pose/poseDetector";
+
 
 
 export default function CameraScreen(){
@@ -21,9 +23,27 @@ export default function CameraScreen(){
     useCameraPermissions();
 
 
-
   const [active,setActive] =
     useState(false);
+
+
+
+  function processFrame(){
+
+
+    const result =
+      detectPose(null);
+
+
+
+    console.log(
+      "Pose result:",
+      result
+    );
+
+
+  }
+
 
 
 
@@ -50,8 +70,11 @@ export default function CameraScreen(){
 
 
         <TouchableOpacity
+
           onPress={requestPermission}
+
           style={styles.button}
+
         >
 
           <Text style={styles.text}>
@@ -79,8 +102,11 @@ export default function CameraScreen(){
         active &&
 
         <CameraView
+
           style={styles.camera}
+
           facing="front"
+
         />
 
       }
@@ -91,9 +117,7 @@ export default function CameraScreen(){
 
         style={styles.button}
 
-        onPress={()=>
-          setActive(!active)
-        }
+        onPress={()=>setActive(!active)}
 
       >
 
@@ -114,12 +138,29 @@ export default function CameraScreen(){
 
 
 
+
+      <TouchableOpacity
+
+        style={styles.button}
+
+        onPress={processFrame}
+
+      >
+
+        <Text style={styles.text}>
+          Test Pose Detection
+        </Text>
+
+      </TouchableOpacity>
+
+
+
+
       <Text style={styles.status}>
 
         Pose Engine Ready
 
       </Text>
-
 
 
     </View>
@@ -131,7 +172,8 @@ export default function CameraScreen(){
 
 
 
-const styles=StyleSheet.create({
+
+const styles = StyleSheet.create({
 
 container:{
  flex:1,
@@ -151,7 +193,7 @@ button:{
  backgroundColor:"#2563EB",
  padding:15,
  borderRadius:10,
- margin:20
+ margin:10
 },
 
 
@@ -163,7 +205,8 @@ text:{
 
 status:{
  color:"#00ff88",
- fontSize:20
+ fontSize:20,
+ marginTop:20
 }
 
 
