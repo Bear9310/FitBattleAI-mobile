@@ -3,8 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 import socket from "../services/socket";
 
+import {
+  countRep,
+  resetExercise
+} from "@/services/exercise/exerciseCounter";
+
 
 export default function BattleScreen() {
+
 
   const [timeLeft, setTimeLeft] = useState(60);
 
@@ -16,80 +22,126 @@ export default function BattleScreen() {
 
   function sendExercise(){
 
-    socket.emit("playerAction",{
 
-      roomId: global.roomId,
+    // simulate pose movement
+    const down =
+      countRep(
+        "pushup",
+        "down"
+      );
 
-      exercise:"pushup",
 
-      reps:1,
+    const up =
+      countRep(
+        "pushup",
+        "up"
+      );
 
-      confidence:0.95
 
-    });
+
+    if(up.completed){
+
+
+      socket.emit(
+        "playerAction",
+        {
+
+          roomId: global.roomId,
+
+          exercise:"pushup",
+
+          reps:1,
+
+          confidence:0.95
+
+        }
+      );
+
+
+    }
+
 
   }
 
 
 
-  useEffect(() => {
 
 
-    const timer = setInterval(() => {
+  useEffect(()=>{
 
 
-      setTimeLeft((prev)=>{
+    resetExercise("pushup");
 
 
-        if(prev <= 1){
 
-          clearInterval(timer);
+    const timer =
+      setInterval(()=>{
 
-          return 0;
+
+        setTimeLeft(
+          prev=>{
+
+            if(prev <= 1){
+
+              clearInterval(timer);
+
+              return 0;
+
+            }
+
+
+            return prev - 1;
+
+          }
+        );
+
+
+      },1000);
+
+
+
+
+
+    socket.on(
+      "scoreUpdate",
+      (data)=>{
+
+
+        const scores =
+          data.scores;
+
+
+        const myId =
+          socket.id;
+
+
+
+        setMyScore(
+          scores[myId] || 0
+        );
+
+
+
+        const opponentId =
+          Object.keys(scores)
+          .find(
+            id=>id !== myId
+          );
+
+
+
+        if(opponentId){
+
+          setOpponentScore(
+            scores[opponentId] || 0
+          );
 
         }
 
 
-        return prev - 1;
-
-      });
-
-
-    },1000);
-
-
-
-
-    socket.on("scoreUpdate",(data)=>{
-
-
-      const scores = data.scores;
-
-      const myId = socket.id;
-
-
-      setMyScore(
-        scores[myId] || 0
-      );
-
-
-
-      const opponentId =
-        Object.keys(scores)
-        .find(id => id !== myId);
-
-
-
-      if(opponentId){
-
-        setOpponentScore(
-          scores[opponentId] || 0
-        );
-
       }
+    );
 
-
-    });
 
 
 
@@ -98,13 +150,18 @@ export default function BattleScreen() {
 
       clearInterval(timer);
 
-      socket.off("scoreUpdate");
+
+      socket.off(
+        "scoreUpdate"
+      );
 
 
     };
 
 
   },[]);
+
+
 
 
 
@@ -157,7 +214,6 @@ export default function BattleScreen() {
 
 
 
-
       <TouchableOpacity
         onPress={sendExercise}
         style={styles.button}
@@ -180,7 +236,9 @@ export default function BattleScreen() {
 
 
 
+
 const styles = StyleSheet.create({
+
 
   container:{
     flex:1,
@@ -235,8 +293,8 @@ const styles = StyleSheet.create({
 
   buttonText:{
     color:"#fff",
-    fontSize:16,
     fontWeight:"bold"
   }
+
 
 });
